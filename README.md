@@ -31,18 +31,49 @@ Most of the figures and regression tables are created via adapted code (not prov
 ### PRS for EA in HRS data using PRSice
 In order to replicate the polygenic score for EA available at HRS we 
 - aligned the genetic (genotyped) data to ‘+’ strand (instead of it being aligned to the illumina TOP strand) using plink (Chang et al., 2015), 
-- changed ‘kgp#’ markers to ‘rs’ following the file provided to us by HRS support team
-- converted the beta measures to positive values and flipped the reference allele to represent phenotype-increasing PRS, if the beta value from the GWAS meta-analysis was negative, and 
-- modified the source code for PRSice (v.1.25, Euesden, Lewis and O’Reilly, 2015), to achieve the summation of the score using all SNPs. 
+- changed ‘kgp#’ markers to ‘rs’ following the file provided to us by HRS support team (kgprs.txt): 
 
-Then, the score was standardized within the European population (N = 8598 individuals). 
+```
+plink --bfile [...]/ncbi/public/files/files/untar/phg000207.v2.CIDR_HRS_phase1.genotype-calls-matrixfmt.c1/[...] --flip [...]/data/fliplist.txt --out [...]/PLINK_sets/target --make-bed
+```
+
+```
+plink --bfile [...]/PLINK_sets/target --update-name [...]/data/kgprs.txt --out [...]/PLINK_sets/targetDR --make-bed
+```
+
+- converted the beta measures to positive values and flipped the reference allele to represent phenotype-increasing PRS, if the beta value from the GWAS meta-analysis was negative, and
+- modified the source code for PRSice (v.1.25, Euesden, Lewis and O’Reilly, 2015), to achieve the summation of the score using all SNPs: PRSice_v1.25_mod.R, not provided.
+
+The score was standardized within the European population (N = 8598 individuals). 
 
 For EA2, we used phase 1 and 2 genetic data and GWAS statistics from Okbay et al. (2016). For EA3, we
 used phase 1 and 2 genetic data and GWAS statistics from Lee et al. (2018).
 
+**Example shell script excerpt for EA2 creation**
+```
+R --file=PRSice_v1.25_mod.R -q --args \
+        plink  /usr/local/bin/plink \
+        base [...]/data/cleaning/forprsice/EA2_HRS2_bf.txt \
+        target [...]/data/PLINK_sets123/targetDR \
+        wd [...]/PRSice_out/PRSice_123EA2/ \
+        slower 0 \
+        sinc 0.5 \
+        supper 1.0 \
+        report.best.score.only F \
+        report.individual.scores T \
+        no.regression T \
+        covary F \
+        pheno.file [...]/data/cleaning/randomphenotypes.txt \
+        clump.snps F \
+        allow.no.sex T \
+        remove.mhc T
+```
+
 #### Split scores creation
 
 We split the EA3 score into four components: significant positive ($β ≥ 0$, $p ≤ 5e^−8$), significant negative ($β < 0$, $p ≤ 5e^−8$), nonsignificant positive and nonsignificant negative. 
+
+I.e., for a split score creation the *base* in the shell script above was changed to the one corresponding to a particular component, e.g. "EA2_HRS2_bf_sigpos.txt" corresponding to the significant positive component.
 
 ### PRS for EA using LDPred
 We also constructed a polygenic score with adjusted weights (just EA3). Using the LDPred software tool (ver. 1.0.8, Vilhjalmsson et al., 2015) the weights were adjusted for linkage disequilibrium. The LD-adjusted univariate GWAS weights were obtained for 1,433,221 SNPs that are common across the genetic data (after aligning to ‘+’ strand and changing ‘kgp#’ markers to ‘rs’) and the GWAS summary statistics for the educational attainment phenotype (EA3, Lee et al., 2018), and that pass the filters imposed by LDpred: (i) the variant has a minor allele frequency (MAF) greater than 1% in the reference data, (ii) the variant does not have ambiguous nucleotides, (iii) there is no mismatch between nucleotides in the summary statistics and reference data, and (iv) there is no high (> 0.1) MAF discrepancy between summary statistics and validation

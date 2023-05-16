@@ -36,13 +36,15 @@ In order to replicate the polygenic score for EA available at HRS we
 plink --bfile [...]/ncbi/public/files/files/untar/phg000207.v2.CIDR_HRS_phase1.genotype-calls-matrixfmt.c1/[...] --flip [...]/data/fliplist.txt --out [...]/PLINK_sets/target --make-bed
 ``` 
 
-- changed 'kgp#' markers to 'rs' following the file provided to us by HRS support team ('kgprs.txt'): 
+where 'fliplist.txt' is created from an annotation file provided by HRS support team using `omni_flip.py`.
+
+- changed 'kgp#' markers to 'rs' following ('kgprs.txt') created from an annotation file provided to us by HRS support team: 
 
 ```
 plink --bfile [...]/PLINK_sets/target --update-name [...]/data/kgprs.txt --out [...]/PLINK_sets/targetDR --make-bed
 ```
 
-- converted the beta measures to positive values and flipped the reference allele to represent phenotype-increasing PRS, if the beta value from the GWAS meta-analysis was negative (using `betaflip_prsice.py`, and
+- converted the beta measures to positive values and flipped the reference allele to represent phenotype-increasing PRS, if the beta value from the GWAS meta-analysis was negative (using `betaflip_prsice.py` and GWAS statistics excluding 23andMe provided by Aysu Okbay 'EA2_excl_23andMe_HRS.meta'), and
 - modified the source code for PRSice (v.1.25, Euesden, Lewis and O’Reilly, 2015), to achieve the summation of the score using all SNPs: PRSice_v1.25_mod.R, not provided).
 
 The score was standardized within the European population (N = 8598 individuals). 

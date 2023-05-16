@@ -30,12 +30,13 @@ Most of the figures and regression tables are created via adapted code (not prov
 
 ### PRS for EA in HRS data using PRSice
 In order to replicate the polygenic score for EA available at HRS we 
-- aligned the genetic (genotyped) data to ‘+’ strand (instead of it being aligned to the illumina TOP strand) using plink (Chang et al., 2015), 
-- changed ‘kgp#’ markers to ‘rs’ following the file provided to us by HRS support team (kgprs.txt): 
+- aligned the genetic (genotyped) data to ‘+’ strand (instead of it being aligned to the illumina TOP strand) using plink (Chang et al., 2015):
 
 ```
 plink --bfile [...]/ncbi/public/files/files/untar/phg000207.v2.CIDR_HRS_phase1.genotype-calls-matrixfmt.c1/[...] --flip [...]/data/fliplist.txt --out [...]/PLINK_sets/target --make-bed
-```
+``` 
+
+- changed ‘kgp#’ markers to ‘rs’ following the file provided to us by HRS support team (kgprs.txt): 
 
 ```
 plink --bfile [...]/PLINK_sets/target --update-name [...]/data/kgprs.txt --out [...]/PLINK_sets/targetDR --make-bed
@@ -68,6 +69,11 @@ R --file=PRSice_v1.25_mod.R -q --args \
         allow.no.sex T \
         remove.mhc T
 ```
+
+where 
+- 'EA2_HRS2_bf.txt' is the base dataset, i.e. GWAS statistics adjusted to represent phenotype-increasing PRS.
+- 'targetDR' is the target dataset in PLINK binary format (i.e., consisting of three files: .bed, .bim, and a .fam files, where bed contains the compressed genotype data, bim contains the SNP information and fam contains the family information) created via 'plink' calls above (aligning and renaming).
+- 'randomphenotypes.txt' is the dummy phenotype file, since no regression is run (as suggested [here](https://www.biostars.org/p/206740/))
 
 #### Split scores creation
 

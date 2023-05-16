@@ -42,7 +42,7 @@ plink --bfile [...]/ncbi/public/files/files/untar/phg000207.v2.CIDR_HRS_phase1.g
 plink --bfile [...]/PLINK_sets/target --update-name [...]/data/kgprs.txt --out [...]/PLINK_sets/targetDR --make-bed
 ```
 
-- converted the beta measures to positive values and flipped the reference allele to represent phenotype-increasing PRS, if the beta value from the GWAS meta-analysis was negative (using `betaflip.py`, and
+- converted the beta measures to positive values and flipped the reference allele to represent phenotype-increasing PRS, if the beta value from the GWAS meta-analysis was negative (using `betaflip_prsice.py`, and
 - modified the source code for PRSice (v.1.25, Euesden, Lewis and O’Reilly, 2015), to achieve the summation of the score using all SNPs: PRSice_v1.25_mod.R, not provided).
 
 The score was standardized within the European population (N = 8598 individuals). 
@@ -71,7 +71,7 @@ R --file=PRSice_v1.25_mod.R -q --args \
 ```
 
 where 
-- 'EA2_HRS2_bf.txt' is the base dataset, i.e. GWAS statistics adjusted to represent phenotype-increasing PRS acquired via `betaflip.py`.
+- 'EA2_HRS2_bf.txt' is the base dataset, i.e. GWAS statistics adjusted to represent phenotype-increasing PRS acquired via `betaflip_prsice.py`.
 - 'targetDR' is the target dataset in PLINK binary format (i.e., consisting of three files: .bed, .bim, and a .fam files, where bed contains the compressed genotype data, bim contains the SNP information and fam contains the family information) created via `plink` calls above (aligning and renaming).
 - 'randomphenotypes.txt' is the dummy phenotype file, since no regression is run (as suggested [here](https://www.biostars.org/p/206740/))
 

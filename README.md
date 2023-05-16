@@ -93,6 +93,14 @@ The score was created in the PLINK using the LDPred adjusted weights and then st
 
 First, the SNPs were split into four components using raw β, then the adjusted weights corresponding to each SNP were used to create the scores.
 
+### Software
+- Python 2.7
+- PLINK version 1.9
+- PRSice version 1.25
+- LDPred version 1.0.8
+- STATA version 14.2
+- R version 3.4.1
+
 ### References
 
 Barth, Daniel, Nicholas W. Papageorge, and Kevin Thom. 2020. "Genetic Endowments and Wealth Inequality." Journal of Political Economy, 128(4): 1474–1522. eprint: https://doi.org/10.1086/705415

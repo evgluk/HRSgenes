@@ -151,8 +151,8 @@ plink \
 ```
 
 where
-- 'EUR.valid.sample'
-- 'mhc.txt' 
+- 'EUR.valid.sample' is created via `eur_sample.py`;
+- 'mhc.txt' is a custom text file in order to exclude MHC region on chromosome 6.
 
 #### Split scores creation
 

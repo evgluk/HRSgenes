@@ -83,11 +83,76 @@ We split the EA3 score into four components: significant positive ($β ≥ 0$, $
 
 I.e., for a split score creation the *base* in the shell script above was changed to the one corresponding to a particular component, e.g. "EA2_HRS2_bf_sigpos.txt" corresponding to the significant positive component (created via `betaflip_prsice.py`.
 
-### PRS for EA using LDPred
-We also constructed a polygenic score with adjusted weights (just EA3). Using the LDPred software tool (ver. 1.0.8, Vilhjalmsson et al., 2015) the weights were adjusted for linkage disequilibrium. The LD-adjusted univariate GWAS weights were obtained for 1,433,221 SNPs that are common across the genetic data (after aligning to ‘+’ strand and changing ‘kgp#’ markers to ‘rs’) and the GWAS summary statistics for the educational attainment phenotype (EA3, Lee et al., 2018), and that pass the filters imposed by LDpred: (i) the variant has a minor allele frequency (MAF) greater than 1% in the reference data, (ii) the variant does not have ambiguous nucleotides, (iii) there is no mismatch between nucleotides in the summary statistics and reference data, and (iv) there is no high (> 0.1) MAF discrepancy between summary statistics and validation
+### PRS for EA using LDpred
+We also constructed a polygenic score with adjusted weights (just EA3). Using the LDpred software tool (ver. 1.0.8, Vilhjalmsson et al., 2015) the weights were adjusted for linkage disequilibrium. The LD-adjusted univariate GWAS weights were obtained for 1,433,221 SNPs that are common across the genetic data (after aligning to ‘+’ strand and changing ‘kgp#’ markers to ‘rs’) and the GWAS summary statistics for the educational attainment phenotype (EA3, Lee et al., 2018), and that pass the filters imposed by LDpred: (i) the variant has a minor allele frequency (MAF) greater than 1% in the reference data, (ii) the variant does not have ambiguous nucleotides, (iii) there is no mismatch between nucleotides in the summary statistics and reference data, and (iv) there is no high (> 0.1) MAF discrepancy between summary statistics and validation
 sample.
 
-The score was created in the PLINK using the LDPred adjusted weights and then standardized within the European population (N = 8530 individuals). 
+The score was created in the PLINK using the LDpred adjusted weights and then standardized (N = 8530 individuals). 
+
+***Step 0:*** since LDpred does not support filtering of samples and SNPs we created an new quality controlled genotype file and restrict it to European Population using plink:
+
+```
+plink \
+    --bfile [...]/data/PLINK_sets123/targetDR \
+    --keep [...]/data/LDPred_sets123/EUR.valid.sample \
+    --not-chr 0 \
+    --make-bed \
+    --out [...]/data/LDPred_sets123/EUR.ldpred
+```
+
+***Step 1:*** we processed the base data file
+
+```
+# Lee 2018 the sample size to over a million individuals (n = 1,131,881) 
+# N = 1131881 - 15708 (HRS) = 1116173
+python ~/.local/lib/python2.7/site-packages/LDpred-1.0.8-py2.7.egg/ldpred/__main__.py coord \
+    --rs rsID \
+    --A1 EA \
+    --A2 OA \
+    --pos BP \
+    --chr Chr \
+    --pval P \
+    --reffreq EAF \
+    --eff BETA \
+    --beta \
+    --ssf-format CUSTOM \
+    --N 1116173 \
+    --ssf [...]/data/EA3_excl_23andMe_HRS.meta.gz \
+    --out EUR.coord \
+    --gf [...]/data/LDPred_sets/EUR.ldpred
+```
+
+The output indicates:
+
+"SNPs retained after filtering: 1439771"
+
+***Step 2:*** we adjusted the effect size estimates
+
+```
+# 1439771/3000 = 480
+# LDpred recommend radius to be Total number of SNPs in target / 3000
+python ~/.local/lib/python2.7/site-packages/LDpred-1.0.8-py2.7.egg/ldpred/__main__.py gibbs \
+    --cf EUR.coord \
+    --ldr 480 \
+    --ldf EUR.ld \
+    --out EUR.weight \
+    --N 1116173
+```
+
+***Step 3:*** we created the score
+
+```
+plink \
+    --bfile [...]/data/LDPred_sets/EUR.ldpred \
+    --score [...]/LDPred_out/EUR.weight 3 4 7 header sum \
+    --out [...]/LDPred_out/EURgensum \
+    --exclude [...]/data/cleaning/mhc.txt range \
+    --allow-no-sex
+```
+
+where
+- 'EUR.valid.sample'
+- 'mhc.txt' 
 
 #### Split scores creation
 
@@ -97,7 +162,7 @@ First, the SNPs were split into four components using raw β, then the adjusted 
 - Python 2.7
 - PLINK version 1.9
 - PRSice version 1.25
-- LDPred version 1.0.8
+- LDpred version 1.0.8
 - STATA version 14.2
 - R version 3.4.1
 

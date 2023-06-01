@@ -79,13 +79,12 @@ where
 
 #### Split scores creation
 
-We split the EA3 score into four components: significant positive ($β ≥ 0$, $p ≤ 5e^−8$), significant negative ($β < 0$, $p ≤ 5e^−8$), nonsignificant positive and nonsignificant negative. 
+We split the EA3 score into two components: significant ($p ≤ 5e^−8$) and insignificant. 
 
-I.e., for a split score creation the *base* in the shell script above was changed to the one corresponding to a particular component, e.g. "EA2_HRS2_bf_sigpos.txt" corresponding to the significant positive component (created via `betaflip_prsice.py`.
+I.e., for a split score creation the *base* in the shell script above was changed to the one corresponding to a particular component, e.g. "EA2_HRS2_bf_sig.txt" corresponding to the significant component (created via `betaflip_prsice.py`.
 
 ### PRS for EA using LDpred
-We also constructed a polygenic score with adjusted weights (just EA3). Using the LDpred software tool (ver. 1.0.8, Vilhjalmsson et al., 2015) the weights were adjusted for linkage disequilibrium. The LD-adjusted univariate GWAS weights were obtained for 1,433,221 SNPs that are common across the genetic data (after aligning to ‘+’ strand and changing ‘kgp#’ markers to ‘rs’) and the GWAS summary statistics for the educational attainment phenotype (EA3, Lee et al., 2018), and that pass the filters imposed by LDpred: (i) the variant has a minor allele frequency (MAF) greater than 1% in the reference data, (ii) the variant does not have ambiguous nucleotides, (iii) there is no mismatch between nucleotides in the summary statistics and reference data, and (iv) there is no high (> 0.1) MAF discrepancy between summary statistics and validation
-sample.
+We also constructed a polygenic score with adjusted weights (just EA3). Using the LDpred software tool (ver. 1.0.8, Vilhjalmsson et al., 2015) the weights were adjusted for linkage disequilibrium. The LD-adjusted univariate GWAS weights were obtained for 1,433,221 SNPs that are common across the genetic data (after aligning to ‘+’ strand and changing ‘kgp#’ markers to ‘rs’) and the GWAS summary statistics for the educational attainment phenotype (EA3, Lee et al., 2018), and that pass the filters imposed by LDpred: (i) the variant has a minor allele frequency (MAF) greater than 1% in the reference data, (ii) the variant does not have ambiguous nucleotides, (iii) there is no mismatch between nucleotides in the summary statistics and reference data, and (iv) there is no high (> 0.1) MAF discrepancy between summary statistics and validation sample.
 
 The score was created in the PLINK using the LDpred adjusted weights and then standardized (N = 8530 individuals). 
 
@@ -156,7 +155,7 @@ where
 
 #### Split scores creation
 
-First, the SNPs were split into four components using raw β, then the adjusted weights corresponding to each SNP were used to create the scores.
+First, the SNPs were split into two components using raw β, then the adjusted weights corresponding to each SNP were used to create the scores.
 
 ### Software
 - Python 2.7
